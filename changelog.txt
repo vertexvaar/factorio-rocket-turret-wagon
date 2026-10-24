@@ -1,0 +1,7 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 2026-10-24
+  Features:
+    - Rocket wagon: a cargo wagon with two rocket launchers on its roof that work like rocket turrets, also while moving.
+    - The launchers reload from rockets in the wagon's cargo. Without Space Age they use the rocket launcher's stats.
+    - Works on elevated rails. Wagon quality carries over to the launchers.

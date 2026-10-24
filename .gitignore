@@ -1,0 +1,6 @@
+tests/.env/
+*.zip
+__pycache__/
+dist/
+tools/blender/out/
+previews/shots/

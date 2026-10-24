@@ -1,0 +1,10 @@
+{
+  "name": "rocket-turret-wagon",
+  "version": "0.1.0",
+  "title": "Rocket Wagon",
+  "author": "vertexvaar",
+  "homepage": "https://github.com/vertexvaar/factorio-rocket-turret-wagon",
+  "factorio_version": "2.1",
+  "description": "A cargo wagon with two rocket turrets on its roof. They work like rocket turrets, also while the train is moving, and take their rockets from the wagon's cargo.",
+  "dependencies": ["base >= 2.1.0"]
+}
