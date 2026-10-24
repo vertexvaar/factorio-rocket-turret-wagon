@@ -73,7 +73,8 @@ end
 
 local function mount(wagon, offset)
   local a = wagon.orientation * 2 * math.pi
-  return wagon.position.x + math.sin(a) * offset, wagon.position.y - math.cos(a) * offset
+  -- the mod foreshortens north-south offsets like the wagon sprite
+  return wagon.position.x + math.sin(a) * offset, wagon.position.y - math.cos(a) * offset * math.sin(math.rad(50))
 end
 
 local function mounts()

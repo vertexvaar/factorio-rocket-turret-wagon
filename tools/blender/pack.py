@@ -14,8 +14,11 @@ import numpy as np
 from PIL import Image
 
 SUPERSAMPLE = 2
-MASK_STRENGTH = 0.75  # vanilla masks do not tint at full strength either
-MASK_GREY = 160
+# Factorio's tint_as_overlay paints overlay(mask colour, tint) over the sprite with the mask's alpha.
+# Vanilla masks carry the shading of the sprite at about 40 % grey and at most half alpha;
+# a light mask (above 50 % grey) turns the paint pale.
+MASK_STRENGTH = 0.55
+MASK_SHADE = 1.25  # mask grey = sprite luminance times this
 
 
 # Buildings sit on the square tile grid, so their renders are stretched vertically
@@ -36,10 +39,10 @@ def load(render_dir, kind, index, stretch=1.0):
         im = Image.fromarray(out.astype(np.uint8))
     elif kind == "mask":
         a = np.asarray(im).astype(np.float32)
+        c = np.asarray(load(render_dir, "color", index, stretch)).astype(np.float32)
+        lum = c[..., 0] * 0.299 + c[..., 1] * 0.587 + c[..., 2] * 0.114
         out = np.zeros_like(a)
-        # Factorio overlays (mask colour x tint) onto the sprite: below 0.5 that is
-        # 2 * mask * tint * sprite. Grey 160 keeps the paint about as bright as rendered.
-        out[..., 0:3] = MASK_GREY
+        out[..., 0:3] = np.clip(lum * MASK_SHADE, 0, 255)[..., None]
         out[..., 3] = a[..., 3] * (a[..., 0] / 255.0) * MASK_STRENGTH
         im = Image.fromarray(out.astype(np.uint8))
     return im
@@ -48,12 +51,11 @@ def load(render_dir, kind, index, stretch=1.0):
 def tinted(color, mask, tint):
     """Approximates Factorio's tint_as_overlay for a preview."""
     c = np.asarray(color).astype(np.float32) / 255
-    m = np.asarray(mask).astype(np.float32)[..., 3:4] / 255
+    mk = np.asarray(mask).astype(np.float32) / 255
+    m, alpha = mk[..., 0:3], mk[..., 3:4]
     t = np.array(tint, dtype=np.float32).reshape(1, 1, 3)
-    base = c[..., :3]
-    a = MASK_GREY / 255 * t
-    over = np.where(a < 0.5, 2 * a * base, 1 - 2 * (1 - a) * (1 - base))
-    rgb = base * (1 - m) + over * m
+    over = np.where(m < 0.5, 2 * m * t, 1 - 2 * (1 - m) * (1 - t))
+    rgb = c[..., :3] * (1 - alpha) + over * alpha
     out = np.concatenate([rgb, c[..., 3:4]], axis=2)
     return Image.fromarray((np.clip(out, 0, 1) * 255).astype(np.uint8))
 

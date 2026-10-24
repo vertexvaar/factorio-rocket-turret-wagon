@@ -8,6 +8,7 @@
 local config = require("config")
 
 local REFILL_INTERVAL = 30
+local FORESHORTEN = math.sin(math.rad(50))
 local ELEVATED_TURRET = config.turret .. "-elevated"
 -- Without elevated rails every wagon is on the ground and draw_data is not needed.
 local ELEVATED_RAILS = script.active_mods["elevated-rails"] ~= nil
@@ -82,7 +83,9 @@ local function place(rig, predict)
   end
   rig.last = predict and pos or nil
   local a = wagon.orientation * 2 * math.pi
-  local ax, ay = math.sin(a), -math.cos(a)
+  -- Rolling stock sprites are seen from 50 degrees up, so lengths along the screen's
+  -- y axis look shorter by sin(50 deg). The mounts follow the drawn roof, not the world.
+  local ax, ay = math.sin(a), -math.cos(a) * FORESHORTEN
   for i, turret in pairs(rig.turrets) do
     local offset = config.mounts[i]
     if not turret.teleport({ x + ax * offset, y + ay * offset }) then return false end

@@ -35,7 +35,7 @@ def materials():
         "paint": rig.material("paint", (0.27, 0.29, 0.22), roughness=0.55, grime=0.45, scale=2.5, bump=0.12, rust=0.75),
         "paint_worn": rig.material("paint_worn", (0.17, 0.17, 0.14), roughness=0.75, grime=0.55, scale=4, bump=0.3, rust=0.9),
         "armour": rig.material("armour", (0.25, 0.26, 0.21), roughness=0.6, grime=0.5, scale=3, bump=0.2, rust=0.6),
-        "deck": rig.material("deck", (0.15, 0.155, 0.13), roughness=0.8, metallic=0.0, grime=0.55, scale=6, bump=0.4, rust=0.5),
+        "deck": rig.material("deck", (0.07, 0.07, 0.06), roughness=0.85, metallic=0.0, grime=0.55, scale=6, bump=0.4, rust=0.5),
         "steel": rig.material("steel", (0.24, 0.24, 0.25), roughness=0.35, metallic=0.75, grime=0.4, rust=0.35),
         "dark": rig.material("dark", (0.06, 0.06, 0.065), roughness=0.5, metallic=0.5, grime=0.3, rust=0.3),
         "sill": rig.material("sill", (0.42, 0.27, 0.08), roughness=0.55, grime=0.5, scale=4, rust=0.5),
