@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 2026-10-24
+  Graphics:
+    - Armoured rocket wagon art: own wagon sprites for all 128 directions, colour mask and shadow, plus a new icon.
+    - The turret heads sit on armoured mounts that follow the wagon in every direction.
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2026-10-24
   Features:

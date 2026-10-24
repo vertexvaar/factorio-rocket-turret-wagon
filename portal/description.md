@@ -1,7 +1,5 @@
 A cargo wagon with two rocket launchers on its roof. They fire like rocket turrets, also while the train is moving.
 
-**Preview release:** the wagon still uses the vanilla look. Its own armoured art is on the way.
-
 ![Rocket wagon in action](https://raw.githubusercontent.com/vertexvaar/factorio-rocket-turret-wagon/main/previews/portal/1-fighting.png)
 
 ## How it works
