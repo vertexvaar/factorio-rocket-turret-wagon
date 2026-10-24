@@ -1,0 +1,9 @@
+{
+  "name": "turret-wagon-ingame",
+  "version": "0.0.1",
+  "title": "Turret wagon in-game tests",
+  "author": "vertexvaar",
+  "factorio_version": "2.1",
+  "description": "Player tests in a game window, writes WAGONTEST lines to script-output. Development only.",
+  "dependencies": ["base", "? gun-turret-wagon", "? flamethrower-turret-wagon", "? rocket-turret-wagon"]
+}
