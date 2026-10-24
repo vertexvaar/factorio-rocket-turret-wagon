@@ -1,5 +1,6 @@
 local config = require("config")
 local rig = require("prototypes.rig")
+local graphics = require("prototypes.graphics")
 
 -- With Space Age the roof launchers are rocket turrets. Without it, the rocket
 -- launcher's stats on a gun turret body.
@@ -21,6 +22,16 @@ wagon.color = { r = 0.3, g = 0.33, b = 0.38, a = 1 }
 wagon.allow_manual_color = true
 wagon.factoriopedia_simulation = nil
 rig.armour(wagon)
+local pictures = graphics.wagon_pictures()
+if pictures then
+  wagon.pictures = pictures
+  -- an armoured wagon has no sliding doors
+  wagon.horizontal_doors = nil
+  wagon.vertical_doors = nil
+end
+wagon.icons = graphics.icons(
+  space_age and "__space-age__/graphics/icons/rocket-turret.png" or "__base__/graphics/icons/rocket-launcher.png"
+) or wagon.icons
 
 local item = table.deepcopy(data.raw["item-with-entity-data"]["cargo-wagon"])
 item.name = config.wagon
