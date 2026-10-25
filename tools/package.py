@@ -7,8 +7,8 @@ import os
 import zipfile
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-FILES = ["info.json", "data.lua", "control.lua", "config.lua", "changelog.txt", "thumbnail.png", "README.md", "LICENSE"]
-DIRS = ["prototypes", "graphics", "locale"]
+FILES = ["info.json", "changelog.txt", "thumbnail.png", "README.md", "LICENSE"]
+DIRS = []
 
 
 def main():

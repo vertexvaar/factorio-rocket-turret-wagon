@@ -1,34 +1,11 @@
-A cargo wagon with two rocket launchers on its roof. They fire like rocket turrets, also while the train is moving.
+The rocket wagon now lives in **Military Wagons**, together with the machine gun, flamethrower and rocket wagons:
 
-![Rocket wagon in action](https://raw.githubusercontent.com/vertexvaar/factorio-rocket-turret-wagon/main/previews/portal/1-fighting.png)
+- Mod portal: [https://mods.factorio.com/mod/military-wagons](https://mods.factorio.com/mod/military-wagons)
+- Source: [https://github.com/vertexvaar/factorio-military-wagons](https://github.com/vertexvaar/factorio-military-wagons)
 
-## How it works
+This version is an empty bridge. It contains no wagon of its own and only depends on Military Wagons, so updating pulls in the new mod. Wagons in existing saves keep working.
 
-- Put rockets into the wagon. It has 10 cargo slots.
-- Each launcher keeps 10 rockets loaded and reloads from the wagon's cargo by itself.
-- With Space Age the launchers are rocket turrets. Without Space Age they have the stats of the rocket launcher. Range 36 either way.
-- Minimum range 8, so the explosions stay clear of the train. Pair it with a machine gun wagon for close defence.
-- The launchers turn and unfold faster than a rocket turret, so they also hit targets while the train passes by.
-- Rocket damage and shooting speed research apply as usual.
-- The wagon's quality carries over to its launchers.
-- Works on elevated rails. The launchers need no heating on Aquilo.
-- Mining the wagon gives back the rockets that were loaded in the launchers.
+- Each wagon in Military Wagons can be switched off in the startup settings, if you only want this one.
+- When you switch over, the ammo loaded in the wagon's turrets is lost once. The turrets reload from the wagon's cargo or tank by themselves.
 
-## Unlocking
-
-Research **Rocket wagon** after Railway and Rocket turret (Space Age) or Rocketry (without Space Age).
-
-## Performance
-
-Standing wagons cost nothing per tick. Only moving wagons move their launchers along, and reloading runs twice a second.
-
-## Under the hood
-
-Factorio has no turrets on rolling stock. Every wagon carries two hidden turrets that can't be selected or attacked and that follow the wagon.
-
-## Related mods
-
-- [Machine Gun Wagon](https://mods.factorio.com/mod/gun-turret-wagon)
-- [Flamethrower Wagon](https://mods.factorio.com/mod/flamethrower-turret-wagon)
-
-Languages: English, German. Source and issues: [GitHub](https://github.com/vertexvaar/factorio-rocket-turret-wagon).
+Once Military Wagons is installed you can remove this mod.

@@ -1,9 +1,0 @@
-{
-  "name": "turret-wagon-test",
-  "version": "0.0.1",
-  "title": "Turret wagon test harness",
-  "author": "vertexvaar",
-  "factorio_version": "2.1",
-  "description": "Builds a test scene and logs WAGONTEST results. Development only.",
-  "dependencies": ["base", "? gun-turret-wagon", "? flamethrower-turret-wagon", "? rocket-turret-wagon"]
-}

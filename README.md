@@ -1,31 +1,13 @@
 # Rocket Wagon
 
-Factorio 2.1 mod (Space Age optional). A cargo wagon with two rocket launchers on its roof. They work like rocket
-turrets, also while the train is moving, and reload from rockets in the wagon's cargo.
+The rocket wagon now lives in **Military Wagons**, together with the machine gun, flamethrower and rocket wagons:
 
-- Put rockets into the wagon (10 slots). Each launcher keeps 10 rockets loaded.
-- With Space Age the launchers are rocket turrets (range 36). Without Space Age they have the stats of the rocket
-  launcher (range 36).
-- Minimum range 8, so explosions stay clear of the train. Combine with a machine gun wagon for close defence.
-- The launchers turn and unfold faster than a rocket turret, so they can hit targets while passing.
-- Rocket damage and shooting speed research applies as usual. Wagon quality carries over to the launchers.
-- Works on elevated rails. The launchers need no heating on Aquilo.
-- Unlocked by the technology "Rocket wagon" (after railway and rocket turret, or rocketry without Space Age).
+- Mod portal: [https://mods.factorio.com/mod/military-wagons](https://mods.factorio.com/mod/military-wagons)
+- Source: [https://github.com/vertexvaar/factorio-military-wagons](https://github.com/vertexvaar/factorio-military-wagons)
 
-## How it works
+This version is an empty bridge. It contains no wagon of its own and only depends on Military Wagons, so updating pulls in the new mod. Wagons in existing saves keep working.
 
-Factorio has no turrets on rolling stock. Each wagon gets two hidden turrets (not selectable, not attackable,
-no collision). While the wagon moves, the script teleports them along with it every tick; standing wagons cost
-nothing per tick. Every 30 ticks the launchers are topped up from the wagon. Mining the wagon returns the loaded rockets.
-## Tests
+- Each wagon in Military Wagons can be switched off in the startup settings, if you only want this one.
+- When you switch over, the ammo loaded in the wagon's turrets is lost once. The turrets reload from the wagon's cargo or tank by themselves.
 
-    python tests/run.py                 # headless, with Space Age
-    python tests/run.py --no-space-age
-    python tests/ingame.py              # opens a game window: build, mine, ghost revive, blueprint
-    python tests/shots.py               # opens a game window briefly, writes previews/shots/*.png
-
-## Release
-
-    python tools/package.py             # dist/<name>_<version>.zip
-    python tools/publish.py publish     # first release (needs FACTORIO_API_KEY)
-    python tools/publish.py upload      # later releases
+Once Military Wagons is installed you can remove this mod.

@@ -1,9 +1,0 @@
-{
-  "name": "turret-wagon-shots",
-  "version": "0.0.1",
-  "title": "Turret wagon screenshots",
-  "author": "vertexvaar",
-  "factorio_version": "2.1",
-  "description": "Builds a showcase scene and takes screenshots. Development only.",
-  "dependencies": ["base", "? gun-turret-wagon", "? flamethrower-turret-wagon", "? rocket-turret-wagon"]
-}

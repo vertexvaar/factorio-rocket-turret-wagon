@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 2026-10-25
+  Info:
+    - The wagon moved to Military Wagons (military-wagons). This version is an empty bridge that depends on it. Wagons in existing saves keep working.
+---------------------------------------------------------------------------------------------------
 Version: 0.2.1
 Date: 2026-10-25
   Bugfixes:
