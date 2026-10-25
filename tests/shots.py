@@ -1,6 +1,6 @@
 """Takes in-game screenshots of a showcase scene (opens a Factorio window briefly).
 
-Usage: python tests/shots.py [out_dir]   (default: previews/shots)
+Usage: python tests/shots.py [--no-space-age] [out_dir]   (default: previews/shots)
 """
 import os
 import shutil
@@ -9,12 +9,14 @@ import sys
 import run
 
 HARNESS = "turret-wagon-shots"
-OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(run.ROOT, "previews", "shots")
+ARGS = [a for a in sys.argv[1:] if a != "--no-space-age"]
+SPACE_AGE = "--no-space-age" not in sys.argv
+OUT = ARGS[0] if ARGS else os.path.join(run.ROOT, "previews", "shots")
 
 
 def main():
     run.HARNESS = HARNESS
-    run.prepare(True)
+    run.prepare(SPACE_AGE)
     save = os.path.join(run.ENV, "shots.zip")
     created = run.run(run.DEFAULT_EXE, "--create", save)
     if not os.path.exists(save):

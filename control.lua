@@ -6,31 +6,38 @@
 -- Every few ticks they are topped up with ammo or fluid from the wagon itself.
 
 local config = require("config")
+local rigging = require("prototypes.rig")
 
 local REFILL_INTERVAL = 30
-local FORESHORTEN = math.sin(math.rad(50))
+local FORESHORTEN = rigging.FORESHORTEN
+local SINK_STEPS = rigging.sink_steps(config.mounts)
 local ELEVATED_TURRET = config.turret .. "-elevated"
--- Without elevated rails every wagon is on the ground and draw_data is not needed.
+local TURRET_NAMES = { ELEVATED_TURRET }
+for k = 0, SINK_STEPS do
+  TURRET_NAMES[#TURRET_NAMES + 1] = rigging.sink_name(config.turret, k)
+end
+-- Without elevated rails every wagon is on the ground.
 local ELEVATED_RAILS = script.active_mods["elevated-rails"] ~= nil
 
 ---@class Rig
 ---@field wagon LuaEntity
 ---@field turrets LuaEntity[]
 ---@field elevated boolean turrets are the elevated variant (drawn above bridges)
+---@field sinks integer[]? sink step of each ground turret (see prototypes/rig.lua), nil = 0
 ---@field last MapPosition? anchor position on the previous tick while moving
 
 -- storage.rigs[wagon unit number] = Rig
 
--- Where the turrets are mounted: the wagon's drawn position, which is lifted on elevated rails.
+-- Where the turrets are mounted: the wagon's drawn position. It is lifted on elevated
+-- rails and lies south of the wagon's position when the wagon runs north-south.
 local function anchor(wagon)
-  if not ELEVATED_RAILS then return wagon.position, false end
   local draw = wagon.draw_data
-  return draw.position, draw.height > 1.5
+  return draw.position, ELEVATED_RAILS and draw.height > 1.5
 end
 
-local function create_turret(wagon, elevated, position)
+local function create_turret(wagon, elevated, sink, position)
   local turret = wagon.surface.create_entity({
-    name = elevated and ELEVATED_TURRET or config.turret,
+    name = elevated and ELEVATED_TURRET or rigging.sink_name(config.turret, sink),
     position = position,
     force = wagon.force,
     quality = wagon.quality,
@@ -40,25 +47,26 @@ local function create_turret(wagon, elevated, position)
   return turret
 end
 
--- Replaces the turrets by the ground or the elevated variant, keeping their ammo.
-local function swap(rig, elevated)
-  for i, old in pairs(rig.turrets) do
-    local new = create_turret(rig.wagon, elevated, old.position)
-    if config.fluid then
-      for name, amount in pairs(old.get_fluid_contents()) do
-        new.insert_fluid({ name = name, amount = amount })
-      end
-    else
-      local from = old.get_inventory(defines.inventory.turret_ammo)
-      local to = new.get_inventory(defines.inventory.turret_ammo)
-      for s = 1, #from do
-        if from[s].valid_for_read then to.insert(from[s]) end
-      end
+-- Replaces turret i by another variant (elevated, or another sink step), keeping its ammo and aim.
+local function swap(rig, i, elevated, sink)
+  local old = rig.turrets[i]
+  local new = create_turret(rig.wagon, elevated, sink, old.position)
+  if config.fluid then
+    for name, amount in pairs(old.get_fluid_contents()) do
+      new.insert_fluid({ name = name, amount = amount })
     end
-    old.destroy()
-    rig.turrets[i] = new
+  else
+    local from = old.get_inventory(defines.inventory.turret_ammo)
+    local to = new.get_inventory(defines.inventory.turret_ammo)
+    for s = 1, #from do
+      if from[s].valid_for_read then to.insert(from[s]) end
+    end
   end
-  rig.elevated = elevated
+  new.orientation = old.orientation
+  old.destroy()
+  rig.turrets[i] = new
+  rig.sinks[i] = sink
+  return new
 end
 
 local function intact(rig)
@@ -75,7 +83,9 @@ local function place(rig, predict)
   local wagon = rig.wagon
   if not intact(rig) then return false end
   local pos, elevated = anchor(wagon)
-  if elevated ~= rig.elevated then swap(rig, elevated) end
+  rig.sinks = rig.sinks or {}
+  -- the wagon is sorted by its position, which can lie south of where it is drawn
+  local below = math.max(0, wagon.position.y - pos.y)
   local x, y = pos.x, pos.y
   local last = rig.last
   if predict and last then
@@ -83,13 +93,21 @@ local function place(rig, predict)
   end
   rig.last = predict and pos or nil
   local a = wagon.orientation * 2 * math.pi
-  -- Rolling stock sprites are seen from 50 degrees up, so lengths along the screen's
-  -- y axis look shorter by sin(50 deg). The mounts follow the drawn roof, not the world.
+  -- The mounts follow the drawn (foreshortened) roof, not the world.
   local ax, ay = math.sin(a), -math.cos(a) * FORESHORTEN
   for i, turret in pairs(rig.turrets) do
     local offset = config.mounts[i]
-    if not turret.teleport({ x + ax * offset, y + ay * offset }) then return false end
+    local ty = y + ay * offset
+    local sink = 0
+    if not elevated then
+      -- a turret north of the wagon centre sinks south until it is drawn after the wagon
+      sink = math.min(SINK_STEPS, math.max(0, math.ceil((below - ay * offset) / rigging.SINK_STEP - 1e-6)))
+      ty = ty + rigging.sink(sink)
+    end
+    if elevated ~= rig.elevated or sink ~= (rig.sinks[i] or 0) then turret = swap(rig, i, elevated, sink) end
+    if not turret.teleport({ x + ax * offset, ty }) then return false end
   end
+  rig.elevated = elevated
   return true
 end
 
@@ -111,9 +129,10 @@ local function repair(rig)
   end
   local pos, elevated = anchor(rig.wagon)
   rig.elevated = elevated
+  rig.sinks = {}
   rig.last = nil
   for i in pairs(config.mounts) do
-    rig.turrets[i] = create_turret(rig.wagon, elevated, pos)
+    rig.turrets[i] = create_turret(rig.wagon, elevated, 0, pos)
   end
   place(rig)
 end
@@ -284,7 +303,7 @@ local function rebuild()
     end
   end
   for _, surface in pairs(game.surfaces) do
-    for _, turret in pairs(surface.find_entities_filtered({ name = { config.turret, ELEVATED_TURRET } })) do
+    for _, turret in pairs(surface.find_entities_filtered({ name = TURRET_NAMES })) do
       if not known[turret.unit_number] then turret.destroy() end
     end
     for _, wagon in pairs(surface.find_entities_filtered({ name = config.wagon })) do
@@ -330,4 +349,9 @@ end)
 remote.add_interface(config.wagon, {
   -- for tests: the turrets riding on a wagon
   turrets = function(wagon) return storage.rigs[wagon.unit_number] and storage.rigs[wagon.unit_number].turrets end,
+  -- for tests: how far south of its mount a turret sits so it is drawn after the wagon
+  sink = function(turret)
+    local k = turret.name:match("%-sink%-(%d+)$")
+    return turret.name ~= ELEVATED_TURRET and rigging.sink(tonumber(k) or 0) or 0
+  end,
 })

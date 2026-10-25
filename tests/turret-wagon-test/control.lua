@@ -73,8 +73,9 @@ end
 
 local function mount(wagon, offset)
   local a = wagon.orientation * 2 * math.pi
-  -- the mod foreshortens north-south offsets like the wagon sprite
-  return wagon.position.x + math.sin(a) * offset, wagon.position.y - math.cos(a) * offset * math.sin(math.rad(50))
+  -- the mod mounts on the drawn wagon and foreshortens north-south offsets like its sprite
+  local draw = wagon.draw_data.position
+  return draw.x + math.sin(a) * offset, draw.y - math.cos(a) * offset * math.sin(math.rad(50))
 end
 
 local function mounts()
@@ -88,7 +89,9 @@ local function deviation(wagon, positions)
   for i, t in pairs(turrets(wagon)) do
     local x, y = mount(wagon, mounts()[i])
     local p = positions and positions[i] or t.position
-    worst = math.max(worst, math.abs(p.x - x), math.abs(p.y - y))
+    -- turrets north of the wagon centre sit further south so they are drawn after the wagon
+    local sink = t.valid and remote.call(MOD, "sink", t) or 0
+    worst = math.max(worst, math.abs(p.x - x), math.abs(p.y - sink - y))
   end
   return worst
 end
@@ -159,6 +162,17 @@ local function setup()
     cx and math.abs(cx.position.x - s.c.position.x) < 0.01 and math.abs(cx.position.y - s.c.position.y) > 1,
     "turrets follow a vertical wagon",
     string.format("%.3f", deviation(s.c))
+  )
+  -- the wagon is sorted by its position, so every turret must sit south of it; the
+  -- sprites are lifted back by the same amount, so they stay on the drawn roof
+  local behind = math.huge
+  for _, t in pairs(turrets(s.c)) do
+    behind = math.min(behind, t.position.y - s.c.position.y)
+  end
+  report(
+    behind > 0 and deviation(s.c) < 0.01,
+    "turrets of a vertical wagon are drawn after the wagon and sit on their mounts",
+    string.format("closest %.2f south of the wagon, %.3f off the mounts", behind, deviation(s.c))
   )
 
   -- D/E: removal paths
@@ -323,7 +337,11 @@ script.on_event(defines.events.on_tick, function()
     for _, wagon in pairs(s.surface.find_entities_filtered({ name = MOD })) do
       expected = expected + SPEC.mounts
     end
-    local count = s.surface.count_entities_filtered({ name = { TURRET, TURRET .. "-elevated" } })
+    local names = { TURRET, TURRET .. "-elevated" }
+    for k = 1, 9 do
+      if prototypes.entity[TURRET .. "-sink-" .. k] then names[#names + 1] = TURRET .. "-sink-" .. k end
+    end
+    local count = s.surface.count_entities_filtered({ name = names })
     report(count == expected, "no orphaned turrets", count .. " turrets, " .. expected .. " expected")
     log("WAGONTEST DONE")
   end

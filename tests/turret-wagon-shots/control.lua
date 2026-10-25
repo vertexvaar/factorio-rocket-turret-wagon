@@ -77,6 +77,18 @@ local function setup()
   -- vertical train
   rail_line(surface, true, 81, -31, 31)
   s.c = train(surface, true, 81, 0)
+  -- trains among trees: trees in front must cover the turrets, trees behind must not
+  rail_line(surface, false, -31, -31, 31)
+  train(surface, false, -31, 0)
+  rail_line(surface, true, 121, -31, 31)
+  train(surface, true, 121, 0)
+  local trees = {
+    { -2.5, -33.5 }, { 2.5, -34 }, { -1.5, -28.5 }, { 1.5, -28 }, { 4, -29 },
+    { 119, -3 }, { 123, 1.5 }, { 119.5, 2.5 }, { 122.5, -2 }, { 121.5, 4.5 }, { 120.5, -5 },
+  }
+  for _, p in pairs(trees) do
+    surface.create_entity({ name = "tree-01", position = p })
+  end
   -- fast train
   rail_line(surface, false, -61, -151, 151)
   s.b, s.b_loco = train(surface, false, -61, -140)
@@ -127,6 +139,8 @@ script.on_event(defines.events.on_tick, function()
     [5] = { "standing", { 0, 0 }, 1.5 },
     [6] = { "vertical", { 81, 0 }, 1.5 },
     [7] = { "elevated", { 0, 38 }, 1.5 },
+    [8] = { "trees", { 0, -31 }, 1.5 },
+    [9] = { "trees-vertical", { 121, 0 }, 1.5 },
     [80] = { "fighting", { 0, 4 }, 1 },
     [170] = { "fighting-2", { 0, 4 }, 1 },
     [90] = { "fast-1", "b", 1.5 },

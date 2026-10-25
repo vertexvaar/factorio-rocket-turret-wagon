@@ -63,8 +63,6 @@ turret.attack_parameters.min_range = 8
 data:extend({
   wagon,
   item,
-  turret,
-  rig.elevated(turret),
   {
     type = "recipe",
     name = config.wagon,
@@ -121,3 +119,4 @@ data:extend({
     },
   },
 })
+data:extend(rig.variants(turret, config.mounts))
